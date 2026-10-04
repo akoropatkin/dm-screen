@@ -151,10 +151,10 @@
       </div>
     </section>
 
-    <!-- CARD 8: SECRETS & CLUES TRACKER -->
+   <!-- CARD 8: SECRETS & CLUES TRACKER (INPUT FORM) -->
     <section class="card" id="clues-tracker">
       <h2>Secrets & Clues Tracker</h2>
-      <p class="card-desc">Track secrets and attach them directly to specific NPCs.</p>
+      <p class="card-desc">Attach new secrets directly to specific NPCs and log the session delivered.</p>
 
       <div class="input-group">
         <label for="new-clue">Secret / Clue Text:</label>
@@ -176,20 +176,23 @@
 
       <div class="input-group">
         <label for="clue-points-toward">Points Toward:</label>
-        <input type="text" id="clue-points-toward" placeholder="e.g., Traitor, True Identity, Planar Breach">
+        <input type="text" id="clue-points-toward" placeholder="e.g., Traitor, Epistemic Strain, Planar Breach">
+      </div>
+
+      <div class="input-group">
+        <label for="clue-session-num">Delivered in Session #:</label>
+        <input type="number" id="clue-session-num" value="1" min="1">
       </div>
       
       <div class="button-group">
         <button type="button" class="btn btn-primary" id="btn-add-clue">Attach Clue to NPC</button>
       </div>
-
-      <ul class="clue-list" id="clues-list"></ul>
     </section>
 
     <!-- CARD 9: NPC PROFILE & CLUE INSPECTOR -->
     <section class="card" id="npc-directory">
       <h2>NPC Profile & Clue Inspector</h2>
-      <p class="card-desc">Select an NPC to view their goals and attached clues.</p>
+      <p class="card-desc">Select an NPC to view their profile, goals, and attached clues.</p>
 
       <div class="input-group">
         <label for="npc-inspector-select">Select NPC Profile:</label>
@@ -209,37 +212,16 @@
       <ul class="clue-list" id="npc-attached-clues"></ul>
     </section>
 
-    <!-- CARD 10: SESSION LOG FORM -->
-    <section class="card" id="session-log">
-      <h2>Session Log Form</h2>
-      <p class="card-desc">Log main events, decisions, and prep for next time.</p>
-
-      <form id="log-form">
-        <div class="input-group">
-          <label for="log-session-num">Session #:</label>
-          <input type="number" id="log-session-num" value="1">
-        </div>
-
-        <div class="input-group">
-          <label for="log-location">Key Locations Visited:</label>
-          <input type="text" id="log-location" placeholder="e.g., Phandalin, Redbrand Hideout">
-        </div>
-
-        <div class="input-group">
-          <label for="log-summary">Main Events & Choices:</label>
-          <textarea id="log-summary" rows="3" placeholder="Summary of major player decisions..."></textarea>
-        </div>
-
-        <div class="button-group">
-          <button type="submit" class="btn btn-primary">Log Session</button>
-        </div>
-      </form>
-
-      <div id="log-history" style="margin-top: 15px;"></div>
+    <!-- CARD 10: REVEALED SECRETS & CLUES LOG -->
+    <section class="card" id="revealed-clues-card">
+      <h2>Revealed Secrets Archive</h2>
+      <p class="card-desc">Running log of all clues and secrets that have been revealed to players.</p>
+      
+      <ul class="clue-list" id="revealed-clues-log">
+        <li style="color:#888;">No clues revealed yet. Mark clues as "Revealed" in the NPC Inspector to add them here.</li>
+      </ul>
     </section>
-
-  </main>
-
+    
   <!-- JavaScript Engine Connection with Cache-Buster Tag -->
   <script src="app.js?v=2"></script>
 </body>
