@@ -8,13 +8,21 @@
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header Navigation -->
   <header class="app-header">
-    <h1>Campaign Command Center</h1>
-    <span class="subtitle">Ultimate DM Screen v4.5</span>
+    <div class="header-main">
+      <h1>Campaign Command Center</h1>
+      <span class="subtitle">Ultimate DM Screen v4.5</span>
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-btn active">Control Panel</button>
+      <button class="nav-btn" onclick="alert('Initiative module coming in next phase!')">Initiative</button>
+      <button class="nav-btn" onclick="alert('Bestiary & Spells coming in next phase!')">Bestiary & Spells</button>
+      <button class="nav-btn" onclick="alert('Generators coming in next phase!')">Generators</button>
+    </nav>
   </header>
 
-  <!-- Main Grid Dashboard Layout -->
+  <!-- Dashboard Grid Layout -->
   <main class="dashboard-grid">
 
     <!-- CARD 1: TIME, CALENDAR & MOON ENGINE -->
@@ -80,12 +88,7 @@
         <button type="button" class="btn btn-primary" id="btn-add-event">Schedule Event</button>
       </div>
 
-      <ul class="clue-list" id="events-list">
-        <li>
-          <span>Cultist Ritual — 2026-10-10 at 18:00</span>
-          <span class="status-tag unrevealed">Scheduled</span>
-        </li>
-      </ul>
+      <ul class="clue-list" id="events-list"></ul>
     </section>
 
     <!-- CARD 4: ENVIRONMENT & WEATHER -->
@@ -105,7 +108,7 @@
       <h2>Faction & Consequence Clocks</h2>
       <p class="card-desc">Progressive tracking for world events and looming threats.</p>
 
-      <div class="clock-item">
+      <div class="stats-box">
         <p><strong>Cultist Ritual Progress:</strong> 2 / 6 Segments</p>
       </div>
     </section>
@@ -126,10 +129,32 @@
       </ul>
     </section>
 
-  <!-- CARD 7: SECRETS & CLUES TRACKER -->
+    <!-- CARD 7: TRANSLATOR & NPC VOICE GUIDE -->
+    <section class="card" id="voice-guide">
+      <h2>Language & NPC Roleplay Guide</h2>
+      <p class="card-desc">Phonetics, tone styles, and NPC motivations.</p>
+
+      <div class="input-group">
+        <label for="language-select">Active Language / Accent:</label>
+        <select id="language-select">
+          <option value="celestial">Celestial (Elegant, Divine)</option>
+          <option value="draconic">Draconic (Ancient, Resonant)</option>
+          <option value="orcish">Orcish (Brash, Direct)</option>
+          <option value="undercommon">Undercommon (Eerie, Soft)</option>
+        </select>
+      </div>
+
+      <div class="stats-box">
+        <p><strong>Performance Tone:</strong> Calm, resonant, formal; speak with warmth and perfect composure.</p>
+        <p><strong>Motivations:</strong> Justice, mercy, sacred duty, protecting innocents.</p>
+        <p><strong>Bribe Levers:</strong> Rarely bribable; value righteous causes and sacred oaths.</p>
+      </div>
+    </section>
+
+    <!-- CARD 8: SECRETS & CLUES TRACKER -->
     <section class="card" id="clues-tracker">
       <h2>Secrets & Clues Tracker</h2>
-      <p class="card-desc">Track information drops and attach clues to specific NPCs.</p>
+      <p class="card-desc">Track secrets and attach them directly to specific NPCs.</p>
 
       <div class="input-group">
         <label for="new-clue">Secret / Clue Text:</label>
@@ -141,102 +166,30 @@
         <select id="clue-npc-select">
           <option value="Alberto Knox">Alberto Knox (Horizon Walker)</option>
           <option value="Sophia">Sophia (Archivist of Deneir)</option>
-          <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne (The Counselor)</option>
+          <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
           <option value="Kaelen">Kaelen (Steward of Thalara)</option>
+          <option value="The Whispering Archivist">The Whispering Archivist</option>
           <option value="Glasstaff">Glasstaff (Iarno Albrek)</option>
-          <option value="Sildar Hallwinter">Sildar Hallwinter</option>
-          <option value="Gundren Rockseeker">Gundren Rockseeker</option>
           <option value="General World Clue">General World Clue</option>
         </select>
       </div>
 
       <div class="input-group">
-        <label for="clue-points-toward">What It Points Toward:</label>
-        <input type="text" id="clue-points-toward" placeholder="e.g., True Identity, Traitor, Secret Location">
+        <label for="clue-points-toward">Points Toward:</label>
+        <input type="text" id="clue-points-toward" placeholder="e.g., Traitor, True Identity, Planar Breach">
       </div>
       
       <div class="button-group">
         <button type="button" class="btn btn-primary" id="btn-add-clue">Attach Clue to NPC</button>
       </div>
 
-      <ul class="clue-list" id="clues-list">
-        <!-- Attached clues rendered dynamically -->
-      </ul>
+      <ul class="clue-list" id="clues-list"></ul>
     </section>
 
-    <!-- CARD: SECRETS & CLUES TRACKER -->
-<section class="panel" id="clues-tracker">
-  <div class="panel-header">
-    <span>Secrets & Clues Tracker</span>
-    <span style="font-size:0.8rem; color:var(--text-muted);">Attach Clues to NPCs</span>
-  </div>
-
-  <div style="margin-bottom: 8px;">
-    <label style="font-size:0.75rem; color:var(--text-muted);">Secret / Clue Text:</label>
-    <input type="text" id="new-clue" placeholder="e.g., Holds a sealed letter bearing the Black Spider's stamp...">
-  </div>
-
-  <div class="grid-2" style="margin-bottom: 8px;">
-    <div>
-      <label style="font-size:0.75rem; color:var(--text-muted);">Attach to NPC / Entity:</label>
-      <select id="clue-npc-select">
-        <option value="Alberto Knox">Alberto Knox (Horizon Walker)</option>
-        <option value="Sophia">Sophia (Archivist of Deneir)</option>
-        <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
-        <option value="Kaelen">Kaelen (Steward of Thalara)</option>
-        <option value="The Whispering Archivist">The Whispering Archivist</option>
-        <option value="Glasstaff">Glasstaff (Iarno Albrek)</option>
-        <option value="General World Clue">General World Clue</option>
-      </select>
-    </div>
-    <div>
-      <label style="font-size:0.75rem; color:var(--text-muted);">Points Toward:</label>
-      <input type="text" id="clue-points-toward" placeholder="e.g., Traitor, True Identity, Planar Breach">
-    </div>
-  </div>
-
-  <button type="button" class="btn btn-gold" id="btn-add-clue" style="width:100%; margin-bottom: 10px;">+ Attach Clue to NPC</button>
-
-  <div style="font-weight:bold; font-size:0.85rem; color:var(--accent-gold); margin-bottom: 6px;">Master Campaign Clues List:</div>
-  <ul class="log-box" id="clues-list" style="height: 140px; list-style: none;">
-    <!-- Attached clues dynamically render here -->
-  </ul>
-</section>
-
-<!-- CARD: NPC DIRECTORY & PROFILE INSPECTOR -->
-<section class="panel" id="npc-directory">
-  <div class="panel-header">
-    <span>NPC Profile & Clue Inspector</span>
-    <span style="font-size:0.8rem; color:var(--accent-green);">Live Directory</span>
-  </div>
-
-  <div style="margin-bottom: 10px;">
-    <label style="font-size:0.75rem; color:var(--text-muted);">Select NPC Profile:</label>
-    <select id="npc-inspector-select">
-      <option value="Alberto Knox">Alberto Knox</option>
-      <option value="Sophia">Sophia</option>
-      <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
-      <option value="Kaelen">Kaelen (Steward of Thalara)</option>
-      <option value="The Whispering Archivist">The Whispering Archivist</option>
-      <option value="Glasstaff">Glasstaff</option>
-    </select>
-  </div>
-
-  <!-- Selected NPC Profile Card -->
-  <div style="background:#121820; border-left: 3px solid var(--accent-gold); padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size:0.85rem; line-height: 1.4;" id="npc-profile-display">
-    <!-- Dynamically rendered via JS -->
-  </div>
-
-  <div style="font-weight:bold; font-size:0.85rem; color:var(--accent-gold); margin-bottom: 6px;">Clues & Secrets Attached to Selected NPC:</div>
-  <ul id="npc-attached-clues" style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
-    <!-- Dynamically rendered attached clues -->
-  </ul>
-</section>
-
-    <!-- CARD 8: NPC DIRECTORY & PROFILE INSPECTOR -->
+    <!-- CARD 9: NPC PROFILE & CLUE INSPECTOR -->
     <section class="card" id="npc-directory">
       <h2>NPC Profile & Clue Inspector</h2>
-      <p class="card-desc">Select an NPC to view their goals, emotional state, and attached clues.</p>
+      <p class="card-desc">Select an NPC to view their goals and attached clues.</p>
 
       <div class="input-group">
         <label for="npc-inspector-select">Select NPC Profile:</label>
@@ -245,24 +198,18 @@
           <option value="Sophia">Sophia</option>
           <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
           <option value="Kaelen">Kaelen</option>
-          <option value="Glasstaff">Glasstaff (Iarno Albrek)</option>
-          <option value="Sildar Hallwinter">Sildar Hallwinter</option>
+          <option value="The Whispering Archivist">The Whispering Archivist</option>
+          <option value="Glasstaff">Glasstaff</option>
         </select>
       </div>
 
-      <div class="stats-box" id="npc-profile-display">
-        <p><strong>Role & Alignment:</strong> Horizon Walker | Lawful Neutral</p>
-        <p><strong>Goal:</strong> Track planar breaches and resolve timeline anomalies.</p>
-        <p><strong>Emotional State:</strong> Hesitant, burdened by epistemic strain.</p>
-      </div>
+      <div class="stats-box" id="npc-profile-display"></div>
 
-      <h3 style="margin-top: 12px; font-size: 0.95rem; color: #f1c40f;">Attached Clues & Secrets:</h3>
-      <ul class="clue-list" id="npc-attached-clues">
-        <!-- Attached clues for selected NPC render here -->
-      </ul>
+      <h3 style="margin-top: 15px; font-size: 0.9rem; color: #f1c40f;">Attached Clues & Secrets:</h3>
+      <ul class="clue-list" id="npc-attached-clues"></ul>
     </section>
 
-    <!-- CARD 9: SESSION LOG FORM -->
+    <!-- CARD 10: SESSION LOG FORM -->
     <section class="card" id="session-log">
       <h2>Session Log Form</h2>
       <p class="card-desc">Log main events, decisions, and prep for next time.</p>
@@ -293,7 +240,7 @@
 
   </main>
 
-  <!-- Connect the JavaScript Engine -->
+  <!-- JavaScript Engine Connection -->
   <script src="app.js"></script>
 </body>
 </html>
