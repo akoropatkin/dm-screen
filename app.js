@@ -412,5 +412,5 @@ if (logForm) {
 
 // --- INITIALIZE DISPLAY ON LOAD ---
 updateCalendarStats();
-renderClues();
 updateNPCProfileInspector();
+renderRevealedCluesLog();
