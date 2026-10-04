@@ -249,6 +249,34 @@
       </div>
     </section>
 
+    <!-- CARD 11: MASTER CAMPAIGN & SESSION LOG -->
+    <section class="card" id="campaign-session-log-card">
+      <h2>Master Campaign & Session Log</h2>
+      <p class="card-desc">Live chronological record automatically capturing time shifts, tension rolls, secret reveals, and manual DM notes.</p>
+
+      <!-- Quick Custom Manual Note Input -->
+      <div class="input-group">
+        <label for="custom-log-input">Manual DM Note / Major Turning Point:</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="custom-log-input" placeholder="e.g., Turn 145: Arrived in Nytheris; Meeks discovered the Amulet of Whispered Secrets...">
+          <button type="button" class="btn btn-primary" id="btn-add-custom-log">Log Entry</button>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:center;">
+        <span style="font-size:0.8rem; color:#aaa;">Session Stream:</span>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn" id="btn-copy-log" style="padding:4px 8px; font-size:0.75rem;">📋 Copy Log</button>
+          <button type="button" class="btn btn-danger" id="btn-clear-log" style="padding:4px 8px; font-size:0.75rem;">🗑️ Clear Log</button>
+        </div>
+      </div>
+
+      <!-- Log Display Container -->
+      <div class="log-box" id="master-session-log" style="background:#0b0c10; border:1px solid #324353; border-radius:6px; height:280px; overflow-y:auto; padding:10px; font-family:'Courier New', Courier, monospace; font-size:0.82rem; color:#c5c6c7; display:flex; flex-direction:column; gap:6px;">
+        <!-- Dynamic Log Entries Render Here -->
+      </div>
+    </section>
+
   </main>
 
   <script src="app.js?v=3"></script>
