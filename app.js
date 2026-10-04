@@ -300,6 +300,101 @@ if (npcInspectorSelect) {
   npcInspectorSelect.addEventListener('change', updateNPCProfileInspector);
 }
 
+// --- 7. MASTER CAMPAIGN LOG ENGINE ---
+
+let masterCampaignLogs = [
+  {
+    timestamp: "2026-10-04",
+    text: "Active Campaign: Echoes of Vehl'Torath — Turn 145: Arrival in Nytheris. Meeks discovers the Amulet of Whispered Secrets.",
+    isAlert: false
+  },
+  {
+    timestamp: "2026-10-04",
+    text: "Parallel Campaign: Lost Mine of Phandelver — Escort contract from Gundren Rockseeker accepted.",
+    isAlert: false
+  }
+];
+
+const masterSessionLogDisplay = getEl('master-session-log');
+const customLogInput = getEl('custom-log-input');
+const btnAddCustomLog = getEl('btn-add-custom-log');
+const btnCopyLog = getEl('btn-copy-log');
+const btnClearLog = getEl('btn-clear-log');
+
+// Central Logger Function
+function addCampaignLog(text, isAlert = false) {
+  const currentDate = getEl('campaign-current') ? getEl('campaign-current').value : '2026-10-04';
+  
+  const newEntry = {
+    timestamp: currentDate,
+    text: text,
+    isAlert: isAlert
+  };
+
+  masterCampaignLogs.push(newEntry);
+  renderMasterCampaignLog();
+}
+
+function renderMasterCampaignLog() {
+  if (!masterSessionLogDisplay) return;
+
+  masterSessionLogDisplay.innerHTML = '';
+
+  if (masterCampaignLogs.length === 0) {
+    masterSessionLogDisplay.innerHTML = '<div style="color:#888;">No campaign log entries yet.</div>';
+    return;
+  }
+
+  masterCampaignLogs.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.style.borderBottom = '1px dotted #222';
+    div.style.paddingBottom = '4px';
+    div.style.lineHeight = '1.3';
+
+    if (entry.isAlert) {
+      div.style.color = '#e57373';
+      div.style.fontWeight = 'bold';
+    }
+
+    div.innerHTML = `<span style="color:#f1c40f; font-weight:bold;">[${entry.timestamp}]</span> ${entry.text}`;
+    masterSessionLogDisplay.appendChild(div);
+  });
+
+  // Auto-scroll to bottom
+  masterSessionLogDisplay.scrollTop = masterSessionLogDisplay.scrollHeight;
+}
+
+// Add Custom Manual Log Entry
+if (btnAddCustomLog) {
+  btnAddCustomLog.addEventListener('click', () => {
+    const text = customLogInput ? customLogInput.value.trim() : '';
+    if (!text) return;
+
+    addCampaignLog(`✍️ ${text}`);
+    if (customLogInput) customLogInput.value = '';
+  });
+}
+
+// Copy Log to Clipboard
+if (btnCopyLog) {
+  btnCopyLog.addEventListener('click', () => {
+    if (!masterSessionLogDisplay) return;
+    const logText = masterCampaignLogs.map(e => `[${e.timestamp}] ${e.text}`).join('\n');
+    navigator.clipboard.writeText(logText);
+    alert("Campaign log copied to clipboard!");
+  });
+}
+
+// Clear Log
+if (btnClearLog) {
+  btnClearLog.addEventListener('click', () => {
+    if (confirm("Are you sure you want to clear the session log history?")) {
+      masterCampaignLogs = [];
+      renderMasterCampaignLog();
+    }
+  });
+}
 
 // --- INITIALIZATION ---
 updateCalendarStats();
