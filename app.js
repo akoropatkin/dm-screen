@@ -1,11 +1,15 @@
-// DM Screen - Command Center Engine
+// =================================================================
+// CAMPAIGN COMMAND CENTER — MASTER APPLICATION ENGINE (app.js)
+// =================================================================
 
-// Helper function to safely get elements
+// Safe DOM Selector Utility (Prevents runtime crashes if any element is absent)
 function getEl(id) {
   return document.getElementById(id);
 }
 
-// --- 1. TIME & CALENDAR ENGINE ---
+// -----------------------------------------------------------------
+// 1. TIME, CALENDAR & MOON ENGINE
+// -----------------------------------------------------------------
 const campaignStart = getEl('campaign-start');
 const campaignCurrent = getEl('campaign-current');
 const daysElapsedDisplay = getEl('days-elapsed-display');
@@ -23,7 +27,9 @@ if (campaignStart) campaignStart.addEventListener('change', updateCalendarStats)
 if (campaignCurrent) campaignCurrent.addEventListener('change', updateCalendarStats);
 
 
-// --- 2. TENSION POOL & HAZARD ENGINE ---
+// -----------------------------------------------------------------
+// 2. TENSION POOL & HAZARD COUNTER
+// -----------------------------------------------------------------
 let tensionPool = 0;
 const dicePoolCount = getEl('dice-pool-count');
 const threatLevelDisplay = getEl('threat-level-display');
@@ -45,6 +51,7 @@ if (btnAddDie) {
   btnAddDie.addEventListener('click', () => {
     tensionPool++;
     updateTensionDisplay();
+    addCampaignLog(`🎲 Added Action Die (+1d6). Current Tension Pool: ${tensionPool}d6`);
   });
 }
 
@@ -61,16 +68,23 @@ if (btnRollPool) {
       rolls.push(roll);
       if (roll === 1) hazardCount++;
     }
+    
+    const resultMsg = `Rolls: [${rolls.join(', ')}] -> ${hazardCount > 0 ? `🚨 ${hazardCount} HAZARD(S) TRIGGERED!` : 'Clear!'}`;
     if (rollResultsDisplay) {
-      rollResultsDisplay.textContent = `Rolls: [${rolls.join(', ')}] -> ${hazardCount > 0 ? `🚨 ${hazardCount} HAZARD(S) TRIGGERED!` : 'Clear!'}`;
+      rollResultsDisplay.textContent = resultMsg;
     }
+
+    addCampaignLog(`🚨 Rolled Tension Pool (${rolls.length}d6) -> Result: ${hazardCount > 0 ? `${hazardCount} Hazard(s) Triggered!` : 'Clear!'} [${rolls.join(', ')}]`, hazardCount > 0);
+
     tensionPool = 0;
     updateTensionDisplay();
   });
 }
 
 
-// --- 3. SCHEDULED CALENDAR EVENTS ---
+// -----------------------------------------------------------------
+// 3. SCHEDULED CALENDAR EVENTS
+// -----------------------------------------------------------------
 let scheduledEvents = [];
 const btnAddEvent = getEl('btn-add-event');
 const eventTitleInput = getEl('event-title-input');
@@ -89,8 +103,12 @@ if (btnAddEvent) {
       return;
     }
 
-    scheduledEvents.push({ id: Date.now(), title, date, time });
+    const newEvt = { id: Date.now(), title, date, time };
+    scheduledEvents.push(newEvt);
+
     if (eventTitleInput) eventTitleInput.value = '';
+
+    addCampaignLog(`⏰ Scheduled Calendar Event: "${title}" for ${date} at ${time}`);
     renderScheduledEvents();
   });
 }
@@ -110,7 +128,9 @@ function renderScheduledEvents() {
 }
 
 
-// --- 4. NPC DATABASE & CLUE INSPECTOR ---
+// -----------------------------------------------------------------
+// 4. NPC DATABASE, ATTACHED CLUES & REVEALED LOG
+// -----------------------------------------------------------------
 const NPC_DATABASE = {
   "Alberto Knox": {
     role: "Horizon Walker Ranger",
@@ -186,7 +206,9 @@ if (btnAddClue) {
   btnAddClue.addEventListener('click', () => {
     const text = newClueInput ? newClueInput.value.trim() : '';
     const npc = clueNpcSelect ? clueNpcSelect.value : 'General World Clue';
-    const pointsToward = (cluePointsTowardInput && cluePointsTowardInput.value.trim()) ? cluePointsTowardInput.value.trim() : 'General Information';
+    const pointsToward = (cluePointsTowardInput && cluePointsTowardInput.value.trim()) 
+      ? cluePointsTowardInput.value.trim() 
+      : 'General Information';
     const sessionDelivered = clueSessionNumInput ? parseInt(clueSessionNumInput.value) || 1 : 1;
 
     if (!text) {
@@ -207,6 +229,8 @@ if (btnAddClue) {
 
     if (newClueInput) newClueInput.value = '';
     if (cluePointsTowardInput) cluePointsTowardInput.value = '';
+
+    addCampaignLog(`🔍 New Secret Attached to [${npc}]: "${text}" (Delivered: Session ${sessionDelivered}, Points toward: ${pointsToward})`);
 
     updateNPCProfileInspector();
     renderRevealedCluesLog();
@@ -261,6 +285,13 @@ window.toggleClueStatusById = function(clueId) {
   const clue = campaignClues.find(c => c.id === clueId);
   if (clue) {
     clue.status = clue.status === 'Hidden' ? 'Revealed' : 'Hidden';
+    
+    if (clue.status === 'Revealed') {
+      addCampaignLog(`📜 SECRET REVEALED [${clue.npc}]: "${clue.text}" (Session ${clue.sessionDelivered}, Points toward: ${clue.pointsToward})`, true);
+    } else {
+      addCampaignLog(`🙈 Secret toggled back to Hidden [${clue.npc}]: "${clue.text}"`);
+    }
+
     updateNPCProfileInspector();
     renderRevealedCluesLog();
   }
@@ -273,7 +304,7 @@ function renderRevealedCluesLog() {
   const revealedList = campaignClues.filter(c => c.status === 'Revealed');
 
   if (revealedList.length === 0) {
-    revealedCluesLog.innerHTML = '<li style="color:#888;">No clues revealed yet. Mark clues as "Revealed" in the NPC Inspector to log them here.</li>';
+    revealedCluesLog.innerHTML = '<li style="color:#888;">No clues revealed yet. Mark clues as "Revealed" in the NPC Inspector to add them here.</li>';
     return;
   }
 
@@ -300,17 +331,14 @@ if (npcInspectorSelect) {
   npcInspectorSelect.addEventListener('change', updateNPCProfileInspector);
 }
 
-// --- 7. MASTER CAMPAIGN LOG ENGINE ---
 
+// -----------------------------------------------------------------
+// 5. MASTER CAMPAIGN & SESSION LOG ENGINE
+// -----------------------------------------------------------------
 let masterCampaignLogs = [
   {
     timestamp: "2026-10-04",
-    text: "Active Campaign: Echoes of Vehl'Torath — Turn 145: Arrival in Nytheris. Meeks discovers the Amulet of Whispered Secrets.",
-    isAlert: false
-  },
-  {
-    timestamp: "2026-10-04",
-    text: "Parallel Campaign: Lost Mine of Phandelver — Escort contract from Gundren Rockseeker accepted.",
+    text: "Campaign Command Center initialized.",
     isAlert: false
   }
 ];
@@ -321,9 +349,8 @@ const btnAddCustomLog = getEl('btn-add-custom-log');
 const btnCopyLog = getEl('btn-copy-log');
 const btnClearLog = getEl('btn-clear-log');
 
-// Central Logger Function
 function addCampaignLog(text, isAlert = false) {
-  const currentDate = getEl('campaign-current') ? getEl('campaign-current').value : '2026-10-04';
+  const currentDate = campaignCurrent ? campaignCurrent.value : '2026-10-04';
   
   const newEntry = {
     timestamp: currentDate,
@@ -361,11 +388,9 @@ function renderMasterCampaignLog() {
     masterSessionLogDisplay.appendChild(div);
   });
 
-  // Auto-scroll to bottom
   masterSessionLogDisplay.scrollTop = masterSessionLogDisplay.scrollHeight;
 }
 
-// Add Custom Manual Log Entry
 if (btnAddCustomLog) {
   btnAddCustomLog.addEventListener('click', () => {
     const text = customLogInput ? customLogInput.value.trim() : '';
@@ -376,7 +401,6 @@ if (btnAddCustomLog) {
   });
 }
 
-// Copy Log to Clipboard
 if (btnCopyLog) {
   btnCopyLog.addEventListener('click', () => {
     if (!masterSessionLogDisplay) return;
@@ -386,7 +410,6 @@ if (btnCopyLog) {
   });
 }
 
-// Clear Log
 if (btnClearLog) {
   btnClearLog.addEventListener('click', () => {
     if (confirm("Are you sure you want to clear the session log history?")) {
@@ -396,9 +419,13 @@ if (btnClearLog) {
   });
 }
 
-// --- INITIALIZATION ---
+
+// -----------------------------------------------------------------
+// INITIALIZATION ON PAGE LOAD
+// -----------------------------------------------------------------
 updateCalendarStats();
 updateTensionDisplay();
 renderScheduledEvents();
 updateNPCProfileInspector();
 renderRevealedCluesLog();
+renderMasterCampaignLog();
