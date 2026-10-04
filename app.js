@@ -303,5 +303,202 @@ document.querySelectorAll('#scene-checklist input[type="checkbox"]').forEach(cb 
 startDateInput.addEventListener('change', updateCalendarStats);
 currentDateInput.addEventListener('change', updateCalendarStats);
 
+/* ==========================================================================
+   NPC PROFILES & ATTACHED SECRETS ENGINE
+   ========================================================================== */
+
+// NPC Preset Database
+const NPC_DATABASE = {
+  "Alberto Knox": {
+    role: "Displaced Sage / Horizon Walker (LN)",
+    goal: "Track planar breaches and stabilize timeline anomalies.",
+    emotionalState: "Hesitant, burdened by epistemic strain and doubt."
+  },
+  "Sophia": {
+    role: "Celestial Archivist of Deneir (LN)",
+    goal: "Preserve cosmic order and guide mortals through forbidden texts.",
+    emotionalState: "Calm, resonant, formal, compassionate."
+  },
+  "Mr. X / Aurivex Veyne": {
+    role: "The Counselor / Master Builder (Bound Entity)",
+    goal: "Manage the House of Endless Odds while concealing his true identity.",
+    emotionalState: "Polished, misdirecting, secretive."
+  },
+  "Kaelen": {
+    role: "Steward of Thalara / Cleric (LN)",
+    goal: "Uncover traitors in the Order.",
+    emotionalState: "Reserved, emotionally burdened."
+  },
+  "Glasstaff": {
+    role: "Secret Leader of Redbrands (NE)",
+    goal: "Secure Wave Echo Cave for the Black Spider.",
+    emotionalState: "Arrogant, cautious, opportunistic."
+  },
+  "Sildar Hallwinter": {
+    role: "Lords' Alliance Agent / Fighter (LG)",
+    goal: "Restore order in Phandalin and find Iarno Albrek.",
+    emotionalState: "Frustrated with town leadership, loyal."
+  },
+  "Gundren Rockseeker": {
+    role: "Dwarf Quest Initiator / Prospector",
+    goal: "Reopen Wave Echo Cave forge.",
+    emotionalState: "Captured / In peril."
+  },
+  "General World Clue": {
+    role: "Campaign Lore / Environment",
+    goal: "General world secrets not tied to a single NPC.",
+    emotionalState: "N/A"
+  }
+};
+
+// Data Store for Clues
+let campaignClues = [
+  {
+    id: 1,
+    text: "Mirror reflections are faintly distorted when he speaks.",
+    npc: "Alberto Knox",
+    pointsToward: "Epistemic Strain & Metaphysical Unraveling",
+    status: "Hidden"
+  },
+  {
+    id: 2,
+    text: "Carries a sealed letter bearing the Black Spider's wax stamp.",
+    npc: "Glasstaff",
+    pointsToward: "Treason & Redbrand leadership",
+    status: "Hidden"
+  }
+];
+
+// DOM References
+const btnAddClue = document.getElementById('btn-add-clue');
+const newClueInput = document.getElementById('new-clue');
+const clueNpcSelect = document.getElementById('clue-npc-select');
+const cluePointsTowardInput = document.getElementById('clue-points-toward');
+const cluesList = document.getElementById('clues-list');
+
+const npcInspectorSelect = document.getElementById('npc-inspector-select');
+const npcProfileDisplay = document.getElementById('npc-profile-display');
+const npcAttachedCluesList = document.getElementById('npc-attached-clues');
+
+/**
+ * Adds a new clue attached to a specific NPC
+ */
+btnAddClue.addEventListener('click', () => {
+  const text = newClueInput.value.trim();
+  const npc = clueNpcSelect.value;
+  const pointsToward = cluePointsTowardInput.value.trim() || 'General Information';
+
+  if (!text) {
+    alert("Please enter secret/clue text!");
+    return;
+  }
+
+  const newClue = {
+    id: Date.now(),
+    text: text,
+    npc: npc,
+    pointsToward: pointsToward,
+    status: "Hidden"
+  };
+
+  campaignClues.push(newClue);
+
+  // Clear inputs
+  newClueInput.value = '';
+  cluePointsTowardInput.value = '';
+
+  renderClues();
+  updateNPCProfileInspector();
+  saveData();
+});
+
+/**
+ * Renders the master list of all campaign clues
+ */
+function renderClues() {
+  cluesList.innerHTML = '';
+
+  campaignClues.forEach((clue, index) => {
+    const li = document.createElement('li');
+    li.style.flexDirection = 'column';
+    li.style.alignItems = 'flex-start';
+    li.style.gap = '4px';
+
+    const statusClass = clue.status === 'Revealed' ? 'revealed' : 'unrevealed';
+
+    li.innerHTML = `
+      <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+        <strong>[${clue.npc}]</strong>
+        <button class="status-tag ${statusClass}" onclick="toggleClueStatusById(${clue.id})">${clue.status}</button>
+      </div>
+      <div>${clue.text}</div>
+      <div style="font-size:0.75rem; color:#aaa;">Points toward: <em>${clue.pointsToward}</em></div>
+    `;
+
+    cluesList.appendChild(li);
+  });
+}
+
+/**
+ * Toggles a clue status between Hidden and Revealed by ID
+ */
+function toggleClueStatusById(clueId) {
+  const clue = campaignClues.find(c => c.id === clueId);
+  if (clue) {
+    clue.status = clue.status === 'Hidden' ? 'Revealed' : 'Hidden';
+    renderClues();
+    updateNPCProfileInspector();
+    saveData();
+  }
+}
+
+/**
+ * Updates the NPC Inspector view with selected NPC data and their attached clues
+ */
+function updateNPCProfileInspector() {
+  const selectedNPC = npcInspectorSelect.value;
+  const npcData = NPC_DATABASE[selectedNPC] || {
+    role: "Unknown Role",
+    goal: "No goal recorded.",
+    emotionalState: "Neutral"
+  };
+
+  // Render NPC Profile Card
+  npcProfileDisplay.innerHTML = `
+    <p><strong>Role & Alignment:</strong> ${npcData.role}</p>
+    <p><strong>Goal:</strong> ${npcData.goal}</p>
+    <p><strong>Emotional State:</strong> ${npcData.emotionalState}</p>
+  `;
+
+  // Render Attached Clues for this NPC
+  npcAttachedCluesList.innerHTML = '';
+  const attached = campaignClues.filter(c => c.npc === selectedNPC);
+
+  if (attached.length === 0) {
+    npcAttachedCluesList.innerHTML = '<li style="color:#888;">No clues attached to this NPC yet.</li>';
+    return;
+  }
+
+  attached.forEach(clue => {
+    const li = document.createElement('li');
+    const statusClass = clue.status === 'Revealed' ? 'revealed' : 'unrevealed';
+    li.innerHTML = `
+      <div>
+        <div>${clue.text}</div>
+        <div style="font-size:0.75rem; color:#aaa;">Points toward: ${clue.pointsToward}</div>
+      </div>
+      <span class="status-tag ${statusClass}">${clue.status}</span>
+    `;
+    npcAttachedCluesList.appendChild(li);
+  });
+}
+
+// Attach listener to NPC selector dropdown
+npcInspectorSelect.addEventListener('change', updateNPCProfileInspector);
+
+// Initial Render
+renderClues();
+updateNPCProfileInspector();
+
 // --- INITIALIZATION ---
 loadData();
