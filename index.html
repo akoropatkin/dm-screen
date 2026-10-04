@@ -164,6 +164,75 @@
       </ul>
     </section>
 
+    <!-- CARD: SECRETS & CLUES TRACKER -->
+<section class="panel" id="clues-tracker">
+  <div class="panel-header">
+    <span>Secrets & Clues Tracker</span>
+    <span style="font-size:0.8rem; color:var(--text-muted);">Attach Clues to NPCs</span>
+  </div>
+
+  <div style="margin-bottom: 8px;">
+    <label style="font-size:0.75rem; color:var(--text-muted);">Secret / Clue Text:</label>
+    <input type="text" id="new-clue" placeholder="e.g., Holds a sealed letter bearing the Black Spider's stamp...">
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 8px;">
+    <div>
+      <label style="font-size:0.75rem; color:var(--text-muted);">Attach to NPC / Entity:</label>
+      <select id="clue-npc-select">
+        <option value="Alberto Knox">Alberto Knox (Horizon Walker)</option>
+        <option value="Sophia">Sophia (Archivist of Deneir)</option>
+        <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
+        <option value="Kaelen">Kaelen (Steward of Thalara)</option>
+        <option value="The Whispering Archivist">The Whispering Archivist</option>
+        <option value="Glasstaff">Glasstaff (Iarno Albrek)</option>
+        <option value="General World Clue">General World Clue</option>
+      </select>
+    </div>
+    <div>
+      <label style="font-size:0.75rem; color:var(--text-muted);">Points Toward:</label>
+      <input type="text" id="clue-points-toward" placeholder="e.g., Traitor, True Identity, Planar Breach">
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-gold" id="btn-add-clue" style="width:100%; margin-bottom: 10px;">+ Attach Clue to NPC</button>
+
+  <div style="font-weight:bold; font-size:0.85rem; color:var(--accent-gold); margin-bottom: 6px;">Master Campaign Clues List:</div>
+  <ul class="log-box" id="clues-list" style="height: 140px; list-style: none;">
+    <!-- Attached clues dynamically render here -->
+  </ul>
+</section>
+
+<!-- CARD: NPC DIRECTORY & PROFILE INSPECTOR -->
+<section class="panel" id="npc-directory">
+  <div class="panel-header">
+    <span>NPC Profile & Clue Inspector</span>
+    <span style="font-size:0.8rem; color:var(--accent-green);">Live Directory</span>
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <label style="font-size:0.75rem; color:var(--text-muted);">Select NPC Profile:</label>
+    <select id="npc-inspector-select">
+      <option value="Alberto Knox">Alberto Knox</option>
+      <option value="Sophia">Sophia</option>
+      <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
+      <option value="Kaelen">Kaelen (Steward of Thalara)</option>
+      <option value="The Whispering Archivist">The Whispering Archivist</option>
+      <option value="Glasstaff">Glasstaff</option>
+    </select>
+  </div>
+
+  <!-- Selected NPC Profile Card -->
+  <div style="background:#121820; border-left: 3px solid var(--accent-gold); padding: 10px; border-radius: 4px; margin-bottom: 10px; font-size:0.85rem; line-height: 1.4;" id="npc-profile-display">
+    <!-- Dynamically rendered via JS -->
+  </div>
+
+  <div style="font-weight:bold; font-size:0.85rem; color:var(--accent-gold); margin-bottom: 6px;">Clues & Secrets Attached to Selected NPC:</div>
+  <ul id="npc-attached-clues" style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+    <!-- Dynamically rendered attached clues -->
+  </ul>
+</section>
+
     <!-- CARD 8: NPC DIRECTORY & PROFILE INSPECTOR -->
     <section class="card" id="npc-directory">
       <h2>NPC Profile & Clue Inspector</h2>
