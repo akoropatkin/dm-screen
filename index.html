@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta tags specify character encoding and responsive viewport sizing for screens -->
+  <!-- Meta tags specify character encoding and responsive viewport sizing -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DM Screen - Campaign Command Center</title>
   
-  <!-- Link to external CSS stylesheet for visuals -->
+  <!-- Link to external CSS stylesheet for visual theme -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -71,12 +71,99 @@
 
     <!-- CARD 4: FACTION CLOCKS -->
     <section class="card" id="faction-clocks">
-      <h2>Faction Clocks</h2>
-      <p class="card-desc">Progressive track for world events and looming threats.</p>
+      <h2>Faction & Consequence Clocks</h2>
+      <p class="card-desc">Progressive tracking for world events and looming threats.</p>
 
       <div class="clock-item">
         <p><strong>Cultist Ritual Progress:</strong> 2 / 6 Segments</p>
       </div>
+    </section>
+
+    <!-- CARD 5: SCENE PROCEDURE CHECKLIST -->
+    <section class="card" id="scene-checklist">
+      <h2>Scene Procedure Checklist</h2>
+      <p class="card-desc">Pacing and framing check for scene transitions.</p>
+
+      <ul class="checklist">
+        <li><label><input type="checkbox"> What time is it?</label></li>
+        <li><label><input type="checkbox"> What is the weather/environment?</label></li>
+        <li><label><input type="checkbox"> What do the NPCs know?</label></li>
+        <li><label><input type="checkbox"> What do the NPCs want?</label></li>
+        <li><label><input type="checkbox"> What unresolved thread is nearby?</label></li>
+        <li><label><input type="checkbox"> What consequence from prior actions may appear?</label></li>
+        <li><label><input type="checkbox"> What sensory detail makes the scene feel alive?</label></li>
+      </ul>
+    </section>
+
+    <!-- CARD 6: TRANSLATOR & NPC VOICE GUIDE -->
+    <section class="card" id="voice-guide">
+      <h2>Language & NPC Roleplay Guide</h2>
+      <p class="card-desc">Phonetics, tone styles, and NPC motivations.</p>
+
+      <div class="input-group">
+        <label for="language-select">Active Language / Accent:</label>
+        <select id="language-select">
+          <option value="celestial">Celestial (Elegant, Divine)</option>
+          <option value="draconic">Draconic (Ancient, Resonant)</option>
+          <option value="orcish">Orcish (Brash, Direct)</option>
+          <option value="undercommon">Undercommon (Eerie, Soft)</option>
+        </select>
+      </div>
+
+      <div class="stats-box">
+        <p><strong>Performance Tone:</strong> Calm, resonant, formal; speak with warmth and perfect composure.</p>
+        <p><strong>Motivations:</strong> Justice, mercy, sacred duty, protecting innocents.</p>
+        <p><strong>Bribe Levers:</strong> Rarely bribable; value righteous causes and sacred oaths.</p>
+      </div>
+    </section>
+
+    <!-- CARD 7: SECRETS & CLUES TRACKER -->
+    <section class="card" id="clues-tracker">
+      <h2>Secrets & Clues Tracker</h2>
+      <p class="card-desc">Track information drops and player discoveries.</p>
+
+      <div class="input-group">
+        <label for="new-clue">Add New Secret / Clue:</label>
+        <input type="text" id="new-clue" placeholder="e.g., The mayor holds a cult insignia...">
+      </div>
+      
+      <div class="button-group">
+        <button type="button" class="btn btn-primary">Add Clue</button>
+      </div>
+
+      <ul class="clue-list">
+        <li>
+          <span>The cultist symbol matches the local guard emblem.</span>
+          <span class="status-tag unrevealed">Hidden</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- CARD 8: SESSION LOG FORM -->
+    <section class="card" id="session-log">
+      <h2>Session Log Form</h2>
+      <p class="card-desc">Log main events, decisions, and prep for next time.</p>
+
+      <form id="log-form">
+        <div class="input-group">
+          <label for="log-session-num">Session #:</label>
+          <input type="number" id="log-session-num" value="1">
+        </div>
+
+        <div class="input-group">
+          <label for="log-location">Key Locations Visited:</label>
+          <input type="text" id="log-location" placeholder="e.g., Phandalin, Redbrand Hideout">
+        </div>
+
+        <div class="input-group">
+          <label for="log-summary">Main Events & Choices:</label>
+          <textarea id="log-summary" rows="3" placeholder="Summary of major player decisions..."></textarea>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary">Log Session</button>
+        </div>
+      </form>
     </section>
 
   </main>
