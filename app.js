@@ -1,228 +1,149 @@
-/* ==========================================================================
-   CAMPAIGN COMMAND CENTER - ROBUST JAVASCRIPT ENGINE
-   ========================================================================== */
+// DM Screen - Command Center Engine
 
-// --- 1. NPC LORE DATABASE ---
-const NPC_DATABASE = {
-  "Alberto Knox": {
-    role: "Displaced Sage / Horizon Walker (LN)",
-    goal: "Track planar breaches and resolve timeline anomalies.",
-    emotionalState: "Hesitant, burdened by epistemic strain and doubt."
-  },
-  "Sophia": {
-    role: "Celestial Archivist of Deneir (LN)",
-    goal: "Guards written realities, dangerous glyphs, and living texts.",
-    emotionalState: "Calm, resonant, formal, compassionate."
-  },
-  "Mr. X / Aurivex Veyne": {
-    role: "The Counselor / Master Builder (Archwizard)",
-    goal: "Manages the House of Endless Odds while concealing his true identity.",
-    emotionalState: "Polished, dry wit, suppressed anguish."
-  },
-  "Kaelen": {
-    role: "Steward of Thalara / Cleric (LN)",
-    goal: "Uncover traitor in the Order.",
-    emotionalState: "Reserved, emotionally burdened."
-  },
-  "The Whispering Archivist": {
-    role: "Recurring Guide / Memory Preserver (INFJ)",
-    goal: "Preserve memories of past selves across timelines.",
-    emotionalState: "Bound by oath, serene yet vulnerable."
-  },
-  "Glasstaff": {
-    role: "Secret Leader of Redbrands (NE)",
-    goal: "Secure Wave Echo Cave for the Black Spider.",
-    emotionalState: "Arrogant, cautious, opportunistic."
-  },
-  "General World Clue": {
-    role: "Campaign Lore / Environment",
-    goal: "General world secrets not tied to a single NPC.",
-    emotionalState: "N/A"
-  }
-};
-
-// Seed Campaign Clues
-let campaignClues = [
-  {
-    id: 1,
-    text: "Mirror reflections are faintly distorted when he speaks.",
-    npc: "Alberto Knox",
-    pointsToward: "Epistemic Strain & Metaphysical Unraveling",
-    status: "Hidden"
-  },
-  {
-    id: 2,
-    text: "Ledger entries mention 'Master Aurivex' beneath the Vault.",
-    npc: "Mr. X / Aurivex Veyne",
-    pointsToward: "True Identity as the House Builder",
-    status: "Hidden"
-  },
-  {
-    id: 3,
-    text: "Carries a sealed letter bearing the Black Spider's wax stamp.",
-    npc: "Glasstaff",
-    pointsToward: "Treason & Redbrand leadership",
-    status: "Hidden"
-  }
-];
-
-// --- 2. SAFE DOM GETTER ---
+// Helper function to safely get elements
 function getEl(id) {
   return document.getElementById(id);
 }
 
-// DOM References
-const startDateInput = getEl('campaign-start');
-const currentDateInput = getEl('campaign-current');
+// --- 1. TIME & CALENDAR ENGINE ---
+const campaignStart = getEl('campaign-start');
+const campaignCurrent = getEl('campaign-current');
 const daysElapsedDisplay = getEl('days-elapsed-display');
-const moonPhaseDisplay = getEl('moon-phase-display');
 
-const dicePoolCountDisplay = getEl('dice-pool-count');
+function updateCalendarStats() {
+  if (!campaignStart || !campaignCurrent || !daysElapsedDisplay) return;
+  const start = new Date(campaignStart.value);
+  const current = new Date(campaignCurrent.value);
+  const diffTime = current - start;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  daysElapsedDisplay.textContent = diffDays >= 0 ? diffDays : 0;
+}
+
+if (campaignStart) campaignStart.addEventListener('change', updateCalendarStats);
+if (campaignCurrent) campaignCurrent.addEventListener('change', updateCalendarStats);
+
+
+// --- 2. TENSION POOL & HAZARD ENGINE ---
+let tensionPool = 0;
+const dicePoolCount = getEl('dice-pool-count');
 const threatLevelDisplay = getEl('threat-level-display');
 const rollResultsDisplay = getEl('roll-results-display');
 const btnAddDie = getEl('btn-add-die');
 const btnRollPool = getEl('btn-roll-pool');
 
+function updateTensionDisplay() {
+  if (dicePoolCount) dicePoolCount.textContent = tensionPool;
+  if (threatLevelDisplay) {
+    if (tensionPool === 0) threatLevelDisplay.textContent = "Calm";
+    else if (tensionPool < 3) threatLevelDisplay.textContent = "Uneasy";
+    else if (tensionPool < 5) threatLevelDisplay.textContent = "High Risk";
+    else threatLevelDisplay.textContent = "CRITICAL THREAT";
+  }
+}
+
+if (btnAddDie) {
+  btnAddDie.addEventListener('click', () => {
+    tensionPool++;
+    updateTensionDisplay();
+  });
+}
+
+if (btnRollPool) {
+  btnRollPool.addEventListener('click', () => {
+    if (tensionPool === 0) {
+      alert("Tension pool is empty! Add a die first.");
+      return;
+    }
+    let rolls = [];
+    let hazardCount = 0;
+    for (let i = 0; i < tensionPool; i++) {
+      let roll = Math.floor(Math.random() * 6) + 1;
+      rolls.push(roll);
+      if (roll === 1) hazardCount++;
+    }
+    if (rollResultsDisplay) {
+      rollResultsDisplay.textContent = `Rolls: [${rolls.join(', ')}] -> ${hazardCount > 0 ? `🚨 ${hazardCount} HAZARD(S) TRIGGERED!` : 'Clear!'}`;
+    }
+    tensionPool = 0;
+    updateTensionDisplay();
+  });
+}
+
+
+// --- 3. SCHEDULED CALENDAR EVENTS ---
+let scheduledEvents = [];
 const btnAddEvent = getEl('btn-add-event');
 const eventTitleInput = getEl('event-title-input');
 const eventDateInput = getEl('event-date-input');
 const eventTimeInput = getEl('event-time-input');
 const eventsList = getEl('events-list');
 
-const btnAddClue = getEl('btn-add-clue');
-const newClueInput = getEl('new-clue');
-const clueNpcSelect = getEl('clue-npc-select');
-const cluePointsTowardInput = getEl('clue-points-toward');
-const cluesList = getEl('clues-list');
-
-const npcInspectorSelect = getEl('npc-inspector-select');
-const npcProfileDisplay = getEl('npc-profile-display');
-const npcAttachedCluesList = getEl('npc-attached-clues');
-
-const logForm = getEl('log-form');
-const logHistory = getEl('log-history');
-
-let tensionDicePool = 0;
-
-// --- 3. CALENDAR & MOON PHASE MATH ---
-function updateCalendarStats() {
-  if (!startDateInput || !currentDateInput) return;
-  
-  const startDate = new Date(startDateInput.value);
-  const currentDate = new Date(currentDateInput.value);
-
-  const diffTime = currentDate - startDate;
-  const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (daysElapsedDisplay) {
-    daysElapsedDisplay.textContent = isNaN(daysElapsed) ? 0 : daysElapsed;
-  }
-
-  if (moonPhaseDisplay && !isNaN(currentDate.getTime())) {
-    moonPhaseDisplay.textContent = calculateMoonPhase(currentDate);
-  }
-}
-
-function calculateMoonPhase(date) {
-  const refDate = new Date('2026-01-01');
-  const daysDiff = (date - refDate) / (1000 * 60 * 60 * 24);
-  const synodicCycle = 29.53058867;
-  
-  const phasePosition = ((daysDiff % synodicCycle) + synodicCycle) % synodicCycle;
-  const normalizedPosition = phasePosition / synodicCycle;
-
-  if (normalizedPosition < 0.03 || normalizedPosition > 0.97) return "New Moon 🌑";
-  if (normalizedPosition < 0.22) return "Waxing Crescent 🌒";
-  if (normalizedPosition < 0.28) return "First Quarter 🌓";
-  if (normalizedPosition < 0.47) return "Waxing Gibbous 🌔";
-  if (normalizedPosition < 0.53) return "Full Moon 🌕";
-  if (normalizedPosition < 0.72) return "Waning Gibbous 🌖";
-  if (normalizedPosition < 0.78) return "Last Quarter 🌗";
-  return "Waning Crescent 🌘";
-}
-
-if (startDateInput) startDateInput.addEventListener('change', updateCalendarStats);
-if (currentDateInput) currentDateInput.addEventListener('change', updateCalendarStats);
-
-// --- 4. TENSION POOL MECHANICS ---
-if (btnAddDie) {
-  btnAddDie.addEventListener('click', () => {
-    if (tensionDicePool < 6) {
-      tensionDicePool++;
-      if (dicePoolCountDisplay) dicePoolCountDisplay.textContent = tensionDicePool;
-    } else {
-      alert("Tension pool is full! (Maximum 6d6)");
-    }
-  });
-}
-
-if (btnRollPool) {
-  btnRollPool.addEventListener('click', () => {
-    if (tensionDicePool === 0) {
-      alert("Add at least 1 action die before rolling!");
-      return;
-    }
-
-    let rolls = [];
-    let totalSum = 0;
-    let onesRolled = 0;
-
-    for (let i = 0; i < tensionDicePool; i++) {
-      const roll = Math.floor(Math.random() * 6) + 1;
-      rolls.push(roll);
-      totalSum += roll;
-      if (roll === 1) onesRolled++;
-    }
-
-    let threatText = "Calm";
-    if (onesRolled > 0) {
-      threatText = `🚨 Hazard Triggered! (${onesRolled} ones rolled)`;
-    } else if (totalSum >= 20) {
-      threatText = "Serious Escalation";
-    } else if (totalSum >= 15) {
-      threatText = "Active Complication";
-    } else if (totalSum >= 10) {
-      threatText = "Minor Complication";
-    } else if (totalSum >= 5) {
-      threatText = "Omen / Warning";
-    }
-
-    if (threatLevelDisplay) threatLevelDisplay.textContent = threatText;
-    if (rollResultsDisplay) rollResultsDisplay.textContent = `[ ${rolls.join(', ')} ] (Sum: ${totalSum})`;
-
-    tensionDicePool = 0;
-    if (dicePoolCountDisplay) dicePoolCountDisplay.textContent = 0;
-  });
-}
-
-// --- 5. SCHEDULED EVENTS ---
 if (btnAddEvent) {
   btnAddEvent.addEventListener('click', () => {
     const title = eventTitleInput ? eventTitleInput.value.trim() : '';
     const date = eventDateInput ? eventDateInput.value : '';
     const time = eventTimeInput ? eventTimeInput.value : '';
 
-    if (!title || !date || !time) {
-      alert("Please enter event name, date, and time!");
+    if (!title) {
+      alert("Please enter an event name!");
       return;
     }
 
-    if (eventsList) {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <span>${title} — ${date} at ${time}</span>
-        <span class="status-tag unrevealed">Scheduled</span>
-      `;
-      eventsList.appendChild(li);
-    }
-
+    scheduledEvents.push({ id: Date.now(), title, date, time });
     if (eventTitleInput) eventTitleInput.value = '';
+    renderScheduledEvents();
   });
 }
 
-// --- 6. CLUES, NPC INSPECTOR & REVEALED LOG ---
+function renderScheduledEvents() {
+  if (!eventsList) return;
+  eventsList.innerHTML = '';
+  if (scheduledEvents.length === 0) {
+    eventsList.innerHTML = '<li style="color:#888;">No upcoming scheduled events.</li>';
+    return;
+  }
+  scheduledEvents.forEach(evt => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${evt.title}</strong> — ${evt.date} at ${evt.time}`;
+    eventsList.appendChild(li);
+  });
+}
 
-// Seed Campaign Clues with Session Numbers
+
+// --- 4. NPC DATABASE & CLUE INSPECTOR ---
+const NPC_DATABASE = {
+  "Alberto Knox": {
+    role: "Horizon Walker Ranger",
+    goal: "Seal planar rifts destabilizing the region.",
+    emotionalState: "Guarded, Observant"
+  },
+  "Sophia": {
+    role: "Archivist of Deneir",
+    goal: "Recover forgotten lore from the Old Vaults.",
+    emotionalState: "Scholarly, Anxious"
+  },
+  "Mr. X / Aurivex Veyne": {
+    role: "Secret House Builder / Patron",
+    goal: "Complete the cosmic blueprint before the eclipse.",
+    emotionalState: "Enigmatic, Calculating"
+  },
+  "Kaelen": {
+    role: "Steward of Thalara",
+    goal: "Maintain political neutrality amidst rising tension.",
+    emotionalState: "Weary, Formal"
+  },
+  "The Whispering Archivist": {
+    role: "Entity of the Deep Record",
+    goal: "Collect untold secrets and unwritten debts.",
+    emotionalState: "Unsettling, Calm"
+  },
+  "Glasstaff": {
+    role: "Former Alliance Wizard / Redbrand Leader",
+    goal: "Consolidate power in Phandalin for the Black Spider.",
+    emotionalState: "Arrogant, Paranoid"
+  }
+};
+
 let campaignClues = [
   {
     id: 1,
@@ -379,38 +300,10 @@ if (npcInspectorSelect) {
   npcInspectorSelect.addEventListener('change', updateNPCProfileInspector);
 }
 
-// --- 7. SESSION LOG FORM ---
-if (logForm) {
-  logForm.addEventListener('submit', (e) => {
-    e.preventDefault();
 
-    const sessionNum = getEl('log-session-num') ? getEl('log-session-num').value : 1;
-    const location = getEl('log-location') ? getEl('log-location').value : '';
-    const summary = getEl('log-summary') ? getEl('log-summary').value : '';
-
-    if (!summary) {
-      alert("Please enter a summary!");
-      return;
-    }
-
-    if (logHistory) {
-      const logEntry = document.createElement('div');
-      logEntry.className = 'stats-box';
-      logEntry.style.marginBottom = '10px';
-      logEntry.innerHTML = `
-        <p><strong>Session #${sessionNum}</strong> (${currentDateInput ? currentDateInput.value : ''})</p>
-        <p><strong>Location:</strong> ${location || 'N/A'}</p>
-        <p><strong>Summary:</strong> ${summary}</p>
-      `;
-
-      logHistory.prepend(logEntry);
-    }
-
-    if (getEl('log-summary')) getEl('log-summary').value = '';
-  });
-}
-
-// --- INITIALIZE DISPLAY ON LOAD ---
+// --- INITIALIZATION ---
 updateCalendarStats();
+updateTensionDisplay();
+renderScheduledEvents();
 updateNPCProfileInspector();
 renderRevealedCluesLog();
