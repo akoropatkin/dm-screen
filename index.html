@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- App Header Navigation -->
+  <!-- Header -->
   <header class="app-header">
     <h1>Campaign Command Center</h1>
     <span class="subtitle">Ultimate DM Screen v4.5</span>
@@ -17,10 +17,10 @@
   <!-- Main Grid Dashboard Layout -->
   <main class="dashboard-grid">
 
-    <!-- CARD 1: TIME & CALENDAR ENGINE -->
+    <!-- CARD 1: TIME, CALENDAR & MOON ENGINE -->
     <section class="card" id="time-engine">
       <h2>Time & Calendar Engine</h2>
-      <p class="card-desc">Tracks real-world time elapsed vs. in-game progression.</p>
+      <p class="card-desc">Tracks real-world time elapsed, in-game clock, and moon phases.</p>
       
       <div class="input-group">
         <label for="campaign-start">Campaign Start Date:</label>
@@ -34,6 +34,7 @@
 
       <div class="stats-box">
         <p><strong>Days Elapsed:</strong> <span id="days-elapsed-display">0</span> days</p>
+        <p><strong>Lunar Phase:</strong> <span id="moon-phase-display">Waxing Gibbous 🌔</span></p>
         <p><strong>15-Min Real Time Rule:</strong> 15 mins real = 1 hr in-game</p>
       </div>
     </section>
@@ -46,15 +47,48 @@
       <div class="stats-box">
         <p><strong>Dice Pool Size:</strong> <span id="dice-pool-count">0</span> d6</p>
         <p><strong>Threat Level:</strong> <span id="threat-level-display">Calm</span></p>
+        <p><strong>Roll Results:</strong> <span id="roll-results-display">No rolls yet</span></p>
       </div>
 
       <div class="button-group">
-        <button type="button" class="btn btn-primary">Add Action Die</button>
-        <button type="button" class="btn btn-danger">Roll Tension Pool</button>
+        <button type="button" class="btn btn-primary" id="btn-add-die">Add Action Die (+1d6)</button>
+        <button type="button" class="btn btn-danger" id="btn-roll-pool">Roll Tension Pool</button>
       </div>
     </section>
 
-    <!-- CARD 3: ENVIRONMENT & WEATHER -->
+    <!-- CARD 3: SCHEDULED CALENDAR EVENTS -->
+    <section class="card" id="scheduled-events">
+      <h2>Scheduled Calendar Events</h2>
+      <p class="card-desc">Schedule specific in-game events by Date & Time.</p>
+
+      <div class="input-group">
+        <label for="event-title-input">Event Name:</label>
+        <input type="text" id="event-title-input" placeholder="e.g., Solar Eclipse, Guard Shift">
+      </div>
+
+      <div class="input-group">
+        <label for="event-date-input">Event Target Date:</label>
+        <input type="date" id="event-date-input" value="2026-10-10">
+      </div>
+
+      <div class="input-group">
+        <label for="event-time-input">Event Time (24h):</label>
+        <input type="time" id="event-time-input" value="18:00">
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-primary" id="btn-add-event">Schedule Event</button>
+      </div>
+
+      <ul class="clue-list" id="events-list">
+        <li>
+          <span>Cultist Ritual — 2026-10-10 at 18:00</span>
+          <span class="status-tag unrevealed">Scheduled</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- CARD 4: ENVIRONMENT & WEATHER -->
     <section class="card" id="weather-engine">
       <h2>Environment & Weather</h2>
       <p class="card-desc">Active biome conditions and environmental mechanics.</p>
@@ -66,7 +100,7 @@
       </div>
     </section>
 
-    <!-- CARD 4: FACTION CLOCKS -->
+    <!-- CARD 5: FACTION CLOCKS -->
     <section class="card" id="faction-clocks">
       <h2>Faction & Consequence Clocks</h2>
       <p class="card-desc">Progressive tracking for world events and looming threats.</p>
@@ -76,7 +110,7 @@
       </div>
     </section>
 
-    <!-- CARD 5: SCENE PROCEDURE CHECKLIST -->
+    <!-- CARD 6: SCENE PROCEDURE CHECKLIST -->
     <section class="card" id="scene-checklist">
       <h2>Scene Procedure Checklist</h2>
       <p class="card-desc">Pacing and framing check for scene transitions.</p>
@@ -92,7 +126,7 @@
       </ul>
     </section>
 
-    <!-- CARD 6: TRANSLATOR & NPC VOICE GUIDE -->
+    <!-- CARD 7: TRANSLATOR & NPC VOICE GUIDE -->
     <section class="card" id="voice-guide">
       <h2>Language & NPC Roleplay Guide</h2>
       <p class="card-desc">Phonetics, tone styles, and NPC motivations.</p>
@@ -114,7 +148,7 @@
       </div>
     </section>
 
-    <!-- CARD 7: SECRETS & CLUES TRACKER -->
+    <!-- CARD 8: SECRETS & CLUES TRACKER -->
     <section class="card" id="clues-tracker">
       <h2>Secrets & Clues Tracker</h2>
       <p class="card-desc">Track information drops and player discoveries.</p>
@@ -125,18 +159,18 @@
       </div>
       
       <div class="button-group">
-        <button type="button" class="btn btn-primary">Add Clue</button>
+        <button type="button" class="btn btn-primary" id="btn-add-clue">Add Clue</button>
       </div>
 
-      <ul class="clue-list">
+      <ul class="clue-list" id="clues-list">
         <li>
           <span>The cultist symbol matches the local guard emblem.</span>
-          <span class="status-tag unrevealed">Hidden</span>
+          <button class="status-tag unrevealed" onclick="toggleClueStatus(this)">Hidden</button>
         </li>
       </ul>
     </section>
 
-    <!-- CARD 8: SESSION LOG FORM -->
+    <!-- CARD 9: SESSION LOG FORM -->
     <section class="card" id="session-log">
       <h2>Session Log Form</h2>
       <p class="card-desc">Log main events, decisions, and prep for next time.</p>
@@ -161,9 +195,13 @@
           <button type="submit" class="btn btn-primary">Log Session</button>
         </div>
       </form>
+
+      <div id="log-history" style="margin-top: 15px;"></div>
     </section>
 
   </main>
 
+  <!-- Connect the JavaScript Engine -->
+  <script src="app.js"></script>
 </body>
 </html>
