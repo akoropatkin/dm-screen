@@ -1,108 +1,12 @@
 // =================================================================
-// MASTER CAMPAIGN & SESSION LOG ENGINE
-// =================================================================
-
-let masterCampaignLogs = [
-  {
-    timestamp: "2026-10-04",
-    text: "Campaign Command Center initialized.",
-    isAlert: false
-  }
-];
-
-const masterSessionLogDisplay = getEl('master-session-log');
-const customLogInput = getEl('custom-log-input');
-const btnAddCustomLog = getEl('btn-add-custom-log');
-const btnCopyLog = getEl('btn-copy-log');
-const btnClearLog = getEl('btn-clear-log');
-
-// Centralized Automatic Logger Function
-function addCampaignLog(text, isAlert = false) {
-  const currentDate = getEl('campaign-current') ? getEl('campaign-current').value : '2026-10-04';
-  
-  const newEntry = {
-    timestamp: currentDate,
-    text: text,
-    isAlert: isAlert
-  };
-
-  masterCampaignLogs.push(newEntry);
-  renderMasterCampaignLog();
-}
-
-function renderMasterCampaignLog() {
-  if (!masterSessionLogDisplay) return;
-
-  masterSessionLogDisplay.innerHTML = '';
-
-  if (masterCampaignLogs.length === 0) {
-    masterSessionLogDisplay.innerHTML = '<div style="color:#888;">No campaign log entries yet.</div>';
-    return;
-  }
-
-  masterCampaignLogs.forEach(entry => {
-    const div = document.createElement('div');
-    div.className = 'log-entry';
-    div.style.borderBottom = '1px dotted #222';
-    div.style.paddingBottom = '4px';
-    div.style.lineHeight = '1.3';
-
-    if (entry.isAlert) {
-      div.style.color = '#e57373';
-      div.style.fontWeight = 'bold';
-    }
-
-    div.innerHTML = `<span style="color:#f1c40f; font-weight:bold;">[${entry.timestamp}]</span> ${entry.text}`;
-    masterSessionLogDisplay.appendChild(div);
-  });
-
-  // Auto-scroll to the newest entry at the bottom
-  masterSessionLogDisplay.scrollTop = masterSessionLogDisplay.scrollHeight;
-}
-
-// Manual Note Entry Handler
-if (btnAddCustomLog) {
-  btnAddCustomLog.addEventListener('click', () => {
-    const text = customLogInput ? customLogInput.value.trim() : '';
-    if (!text) return;
-
-    addCampaignLog(`✍️ ${text}`);
-    if (customLogInput) customLogInput.value = '';
-  });
-}
-
-// Copy Log to Clipboard
-if (btnCopyLog) {
-  btnCopyLog.addEventListener('click', () => {
-    if (!masterSessionLogDisplay) return;
-    const logText = masterCampaignLogs.map(e => `[${e.timestamp}] ${e.text}`).join('\n');
-    navigator.clipboard.writeText(logText);
-    alert("Campaign log copied to clipboard!");
-  });
-}
-
-// Clear Log History
-if (btnClearLog) {
-  btnClearLog.addEventListener('click', () => {
-    if (confirm("Are you sure you want to clear the session log history?")) {
-      masterCampaignLogs = [];
-      renderMasterCampaignLog();
-    }
-  });
-}
-
-// =================================================================
 // CAMPAIGN COMMAND CENTER — MASTER APPLICATION ENGINE (app.js)
 // =================================================================
 
-// Safe DOM Selector Utility (Prevents runtime crashes if any element is absent)
 function getEl(id) {
   return document.getElementById(id);
 }
 
-// -----------------------------------------------------------------
-// 1. TIME, CALENDAR & MOON ENGINE
-// -----------------------------------------------------------------
+// --- 1. TIME, CALENDAR & MOON ENGINE ---
 const campaignStart = getEl('campaign-start');
 const campaignCurrent = getEl('campaign-current');
 const daysElapsedDisplay = getEl('days-elapsed-display');
@@ -120,9 +24,7 @@ if (campaignStart) campaignStart.addEventListener('change', updateCalendarStats)
 if (campaignCurrent) campaignCurrent.addEventListener('change', updateCalendarStats);
 
 
-// -----------------------------------------------------------------
-// 2. TENSION POOL & HAZARD COUNTER
-// -----------------------------------------------------------------
+// --- 2. TENSION POOL & HAZARD COUNTER ---
 let tensionPool = 0;
 const dicePoolCount = getEl('dice-pool-count');
 const threatLevelDisplay = getEl('threat-level-display');
@@ -175,9 +77,7 @@ if (btnRollPool) {
 }
 
 
-// -----------------------------------------------------------------
-// 3. SCHEDULED CALENDAR EVENTS
-// -----------------------------------------------------------------
+// --- 3. SCHEDULED CALENDAR EVENTS ---
 let scheduledEvents = [];
 const btnAddEvent = getEl('btn-add-event');
 const eventTitleInput = getEl('event-title-input');
@@ -221,9 +121,7 @@ function renderScheduledEvents() {
 }
 
 
-// -----------------------------------------------------------------
-// 4. NPC DATABASE, ATTACHED CLUES & REVEALED LOG
-// -----------------------------------------------------------------
+// --- 4. NPC DATABASE, ATTACHED CLUES & REVEALED LOG ---
 const NPC_DATABASE = {
   "Alberto Knox": {
     role: "Horizon Walker Ranger",
@@ -425,9 +323,7 @@ if (npcInspectorSelect) {
 }
 
 
-// -----------------------------------------------------------------
-// 5. MASTER CAMPAIGN & SESSION LOG ENGINE
-// -----------------------------------------------------------------
+// --- 5. MASTER CAMPAIGN & SESSION LOG ENGINE ---
 let masterCampaignLogs = [
   {
     timestamp: "2026-10-04",
@@ -512,57 +408,8 @@ if (btnClearLog) {
   });
 }
 
-// 1. Log when Tension Pool Action Die is added or rolled
-if (btnAddDie) {
-  btnAddDie.addEventListener('click', () => {
-    tensionPool++;
-    updateTensionDisplay();
-    addCampaignLog(`🎲 Added Action Die (+1d6). Current Tension Pool: ${tensionPool}d6`);
-  });
-}
 
-if (btnRollPool) {
-  btnRollPool.addEventListener('click', () => {
-    // ... roll calculation ...
-    addCampaignLog(`🚨 Rolled Tension Pool (${rolls.length}d6) -> Result: ${hazardCount > 0 ? `${hazardCount} Hazard(s) Triggered!` : 'Clear!'} [${rolls.join(', ')}]`, hazardCount > 0);
-  });
-}
-
-// 2. Log when a Calendar Event is scheduled
-if (btnAddEvent) {
-  btnAddEvent.addEventListener('click', () => {
-    // ... event creation ...
-    addCampaignLog(`⏰ Scheduled Calendar Event: "${title}" for ${date} at ${time}`);
-  });
-}
-
-// 3. Log when a Secret is attached or toggled to Revealed
-if (btnAddClue) {
-  btnAddClue.addEventListener('click', () => {
-    // ... clue creation ...
-    addCampaignLog(`🔍 New Secret Attached to [${npc}]: "${text}" (Session ${sessionDelivered}, Points toward: ${pointsToward})`);
-  });
-}
-
-window.toggleClueStatusById = function(clueId) {
-  const clue = campaignClues.find(c => c.id === clueId);
-  if (clue) {
-    clue.status = clue.status === 'Hidden' ? 'Revealed' : 'Hidden';
-    
-    if (clue.status === 'Revealed') {
-      addCampaignLog(`📜 SECRET REVEALED [${clue.npc}]: "${clue.text}" (Delivered Session ${clue.sessionDelivered})`, true);
-    } else {
-      addCampaignLog(`🙈 Secret hidden again [${clue.npc}]: "${clue.text}"`);
-    }
-
-    updateNPCProfileInspector();
-    renderRevealedCluesLog();
-  }
-};
-
-// -----------------------------------------------------------------
-// INITIALIZATION ON PAGE LOAD
-// -----------------------------------------------------------------
+// --- INITIALIZATION ON PAGE LOAD ---
 updateCalendarStats();
 updateTensionDisplay();
 renderScheduledEvents();
