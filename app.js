@@ -220,12 +220,53 @@ if (btnAddEvent) {
   });
 }
 
-// --- 6. CLUES & NPC INSPECTOR ---
+// --- 6. CLUES, NPC INSPECTOR & REVEALED LOG ---
+
+// Seed Campaign Clues with Session Numbers
+let campaignClues = [
+  {
+    id: 1,
+    text: "Mirror reflections are faintly distorted when he speaks.",
+    npc: "Alberto Knox",
+    pointsToward: "Epistemic Strain & Metaphysical Unraveling",
+    status: "Hidden",
+    sessionDelivered: 1
+  },
+  {
+    id: 2,
+    text: "Ledger entries mention 'Master Aurivex' beneath the Vault.",
+    npc: "Mr. X / Aurivex Veyne",
+    pointsToward: "True Identity as the House Builder",
+    status: "Hidden",
+    sessionDelivered: 1
+  },
+  {
+    id: 3,
+    text: "Carries a sealed letter bearing the Black Spider's wax stamp.",
+    npc: "Glasstaff",
+    pointsToward: "Traitor & Redbrand leadership",
+    status: "Hidden",
+    sessionDelivered: 2
+  }
+];
+
+const btnAddClue = getEl('btn-add-clue');
+const newClueInput = getEl('new-clue');
+const clueNpcSelect = getEl('clue-npc-select');
+const cluePointsTowardInput = getEl('clue-points-toward');
+const clueSessionNumInput = getEl('clue-session-num');
+
+const npcInspectorSelect = getEl('npc-inspector-select');
+const npcProfileDisplay = getEl('npc-profile-display');
+const npcAttachedCluesList = getEl('npc-attached-clues');
+const revealedCluesLog = getEl('revealed-clues-log');
+
 if (btnAddClue) {
   btnAddClue.addEventListener('click', () => {
     const text = newClueInput ? newClueInput.value.trim() : '';
     const npc = clueNpcSelect ? clueNpcSelect.value : 'General World Clue';
     const pointsToward = (cluePointsTowardInput && cluePointsTowardInput.value.trim()) ? cluePointsTowardInput.value.trim() : 'General Information';
+    const sessionDelivered = clueSessionNumInput ? parseInt(clueSessionNumInput.value) || 1 : 1;
 
     if (!text) {
       alert("Please enter secret/clue text!");
@@ -237,7 +278,8 @@ if (btnAddClue) {
       text: text,
       npc: npc,
       pointsToward: pointsToward,
-      status: "Hidden"
+      status: "Hidden",
+      sessionDelivered: sessionDelivered
     };
 
     campaignClues.push(newClue);
@@ -245,44 +287,10 @@ if (btnAddClue) {
     if (newClueInput) newClueInput.value = '';
     if (cluePointsTowardInput) cluePointsTowardInput.value = '';
 
-    renderClues();
     updateNPCProfileInspector();
+    renderRevealedCluesLog();
   });
 }
-
-function renderClues() {
-  if (!cluesList) return;
-  cluesList.innerHTML = '';
-
-  campaignClues.forEach((clue) => {
-    const li = document.createElement('li');
-    li.style.flexDirection = 'column';
-    li.style.alignItems = 'flex-start';
-    li.style.gap = '4px';
-
-    const statusClass = clue.status === 'Revealed' ? 'revealed' : 'unrevealed';
-
-    li.innerHTML = `
-      <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-        <strong style="color:#f1c40f;">[${clue.npc}]</strong>
-        <button class="status-tag ${statusClass}" onclick="toggleClueStatusById(${clue.id})">${clue.status}</button>
-      </div>
-      <div>${clue.text}</div>
-      <div style="font-size:0.75rem; color:#aaa;">Points toward: <em>${clue.pointsToward}</em></div>
-    `;
-
-    cluesList.appendChild(li);
-  });
-}
-
-window.toggleClueStatusById = function(clueId) {
-  const clue = campaignClues.find(c => c.id === clueId);
-  if (clue) {
-    clue.status = clue.status === 'Hidden' ? 'Revealed' : 'Hidden';
-    renderClues();
-    updateNPCProfileInspector();
-  }
-};
 
 function updateNPCProfileInspector() {
   if (!npcInspectorSelect || !npcProfileDisplay || !npcAttachedCluesList) return;
@@ -310,15 +318,60 @@ function updateNPCProfileInspector() {
 
   attached.forEach(clue => {
     const li = document.createElement('li');
+    li.style.flexDirection = 'column';
+    li.style.alignItems = 'flex-start';
+    li.style.gap = '4px';
+
     const statusClass = clue.status === 'Revealed' ? 'revealed' : 'unrevealed';
+
     li.innerHTML = `
-      <div>
-        <div>${clue.text}</div>
-        <div style="font-size:0.75rem; color:#aaa;">Points toward: ${clue.pointsToward}</div>
+      <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+        <span style="font-size:0.75rem; color:#aaa;">Delivered: Session ${clue.sessionDelivered}</span>
+        <button class="status-tag ${statusClass}" onclick="toggleClueStatusById(${clue.id})">${clue.status}</button>
       </div>
-      <span class="status-tag ${statusClass}">${clue.status}</span>
+      <div style="font-weight:600; color:#fff;">${clue.text}</div>
+      <div style="font-size:0.75rem; color:#f1c40f;">Points toward: <em>${clue.pointsToward}</em></div>
     `;
     npcAttachedCluesList.appendChild(li);
+  });
+}
+
+window.toggleClueStatusById = function(clueId) {
+  const clue = campaignClues.find(c => c.id === clueId);
+  if (clue) {
+    clue.status = clue.status === 'Hidden' ? 'Revealed' : 'Hidden';
+    updateNPCProfileInspector();
+    renderRevealedCluesLog();
+  }
+};
+
+function renderRevealedCluesLog() {
+  if (!revealedCluesLog) return;
+  revealedCluesLog.innerHTML = '';
+
+  const revealedList = campaignClues.filter(c => c.status === 'Revealed');
+
+  if (revealedList.length === 0) {
+    revealedCluesLog.innerHTML = '<li style="color:#888;">No clues revealed yet. Mark clues as "Revealed" in the NPC Inspector to log them here.</li>';
+    return;
+  }
+
+  revealedList.forEach(clue => {
+    const li = document.createElement('li');
+    li.style.flexDirection = 'column';
+    li.style.alignItems = 'flex-start';
+    li.style.gap = '4px';
+    li.style.borderLeft = '3px solid #27ae60';
+
+    li.innerHTML = `
+      <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+        <strong style="color:#f1c40f;">[${clue.npc}]</strong>
+        <span class="status-tag revealed">Session ${clue.sessionDelivered}</span>
+      </div>
+      <div>${clue.text}</div>
+      <div style="font-size:0.75rem; color:#aaa;">Points toward: <em>${clue.pointsToward}</em></div>
+    `;
+    revealedCluesLog.appendChild(li);
   });
 }
 
