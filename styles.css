@@ -172,3 +172,209 @@ body {
   background-color: #27ae60;
   color: #fff;
 }
+
+/* =========================================================================
+   NPC PROFILES & ATTACHED SECRETS ENGINE
+   ========================================================================= */
+
+// NPC Profile Lore Database
+const NPC_DATABASE = {
+  "Alberto Knox": {
+    role: "Displaced Sage / Horizon Walker (LN)",
+    goal: "Track planar breaches and resolve timeline anomalies.",
+    emotionalState: "Hesitant, burdened by epistemic strain and doubt."
+  },
+  "Sophia": {
+    role: "Celestial Archivist of Deneir (LN)",
+    goal: "Guards written realities, dangerous glyphs, and living texts.",
+    emotionalState: "Calm, resonant, formal, compassionate."
+  },
+  "Mr. X / Aurivex Veyne": {
+    role: "The Counselor / Master Builder (Archwizard)",
+    goal: "Manages the House of Endless Odds while concealing his true identity.",
+    emotionalState: "Polished, dry wit, suppressed anguish."
+  },
+  "Kaelen": {
+    role: "Steward of Thalara / Cleric (LN)",
+    goal: "Uncover traitor in the Order.",
+    emotionalState: "Reserved, emotionally burdened."
+  },
+  "The Whispering Archivist": {
+    role: "Recurring Guide / Memory Preserver (INFJ)",
+    goal: "Preserve memories of past selves across timelines.",
+    emotionalState: "Bound by oath, serene yet vulnerable."
+  },
+  "Glasstaff": {
+    role: "Secret Leader of Redbrands (NE)",
+    goal: "Secure Wave Echo Cave for the Black Spider.",
+    emotionalState: "Arrogant, cautious, opportunistic."
+  },
+  "General World Clue": {
+    role: "Campaign Lore / Environment",
+    goal: "General world secrets not tied to a single NPC.",
+    emotionalState: "N/A"
+  }
+};
+
+// Seed Clues Data
+let campaignClues = [
+  {
+    id: 1,
+    text: "Mirror reflections are faintly distorted when he speaks.",
+    npc: "Alberto Knox",
+    pointsToward: "Epistemic Strain & Metaphysical Unraveling",
+    status: "Hidden"
+  },
+  {
+    id: 2,
+    text: "Ledger entries mention 'Master Aurivex' beneath the Vault.",
+    npc: "Mr. X / Aurivex Veyne",
+    pointsToward: "True Identity as the House Builder",
+    status: "Hidden"
+  },
+  {
+    id: 3,
+    text: "Carries a sealed letter bearing the Black Spider's wax stamp.",
+    npc: "Glasstaff",
+    pointsToward: "Treason & Redbrand leadership",
+    status: "Hidden"
+  }
+];
+
+// DOM References
+const btnAddClue = document.getElementById('btn-add-clue');
+const newClueInput = document.getElementById('new-clue');
+const clueNpcSelect = document.getElementById('clue-npc-select');
+const cluePointsTowardInput = document.getElementById('clue-points-toward');
+const cluesList = document.getElementById('clues-list');
+
+const npcInspectorSelect = document.getElementById('npc-inspector-select');
+const npcProfileDisplay = document.getElementById('npc-profile-display');
+const npcAttachedCluesList = document.getElementById('npc-attached-clues');
+
+// Add Clue Handler
+if (btnAddClue) {
+  btnAddClue.addEventListener('click', () => {
+    const text = newClueInput.value.trim();
+    const npc = clueNpcSelect.value;
+    const pointsToward = cluePointsTowardInput.value.trim() || 'General Information';
+
+    if (!text) {
+      alert("Please enter secret/clue text!");
+      return;
+    }
+
+    const newClue = {
+      id: Date.now(),
+      text: text,
+      npc: npc,
+      pointsToward: pointsToward,
+      status: "Hidden"
+    };
+
+    campaignClues.push(newClue);
+
+    newClueInput.value = '';
+    cluePointsTowardInput.value = '';
+
+    renderClues();
+    updateNPCProfileInspector();
+    if (typeof saveData === 'function') saveData();
+  });
+}
+
+// Master Clues List Renderer
+function renderClues() {
+  if (!cluesList) return;
+  cluesList.innerHTML = '';
+
+  campaignClues.forEach((clue) => {
+    const li = document.createElement('li');
+    li.style.background = '#121820';
+    li.style.padding = '6px 8px';
+    li.style.borderRadius = '4px';
+    li.style.borderLeft = '3px solid var(--panel-border)';
+    li.style.marginBottom = '6px';
+    li.style.fontSize = '0.8rem';
+
+    const statusClass = clue.status === 'Revealed' ? 'btn-green' : 'btn-red';
+
+    li.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2px;">
+        <strong style="color:var(--accent-gold);">[${clue.npc}]</strong>
+        <button class="btn ${statusClass}" style="padding:2px 6px; font-size:0.7rem;" onclick="toggleClueStatusById(${clue.id})">${clue.status}</button>
+      </div>
+      <div>${clue.text}</div>
+      <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Points toward: <em>${clue.pointsToward}</em></div>
+    `;
+
+    cluesList.appendChild(li);
+  });
+}
+
+// Toggle Hidden / Revealed Status
+window.toggleClueStatusById = function(clueId) {
+  const clue = campaignClues.find(c => c.id === clueId);
+  if (clue) {
+    clue.status = clue.status === 'Hidden' ? 'Revealed' : 'Hidden';
+    renderClues();
+    updateNPCProfileInspector();
+    if (typeof saveData === 'function') saveData();
+  }
+};
+
+// Update NPC Inspector View
+function updateNPCProfileInspector() {
+  if (!npcInspectorSelect || !npcProfileDisplay || !npcAttachedCluesList) return;
+
+  const selectedNPC = npcInspectorSelect.value;
+  const npcData = NPC_DATABASE[selectedNPC] || {
+    role: "Unknown Role",
+    goal: "No goal recorded.",
+    emotionalState: "Neutral"
+  };
+
+  npcProfileDisplay.innerHTML = `
+    <p><strong>Role & Alignment:</strong> ${npcData.role}</p>
+    <p><strong>Goal:</strong> ${npcData.goal}</p>
+    <p><strong>Emotional State:</strong> ${npcData.emotionalState}</p>
+  `;
+
+  npcAttachedCluesList.innerHTML = '';
+  const attached = campaignClues.filter(c => c.npc === selectedNPC);
+
+  if (attached.length === 0) {
+    npcAttachedCluesList.innerHTML = '<li style="color:var(--text-muted); font-size:0.8rem;">No clues attached to this NPC yet.</li>';
+    return;
+  }
+
+  attached.forEach(clue => {
+    const li = document.createElement('li');
+    li.style.background = '#121820';
+    li.style.padding = '8px';
+    li.style.borderRadius = '4px';
+    li.style.fontSize = '0.8rem';
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
+    li.style.alignItems = 'center';
+
+    const statusClass = clue.status === 'Revealed' ? 'color:var(--accent-green);' : 'color:var(--accent-red);';
+
+    li.innerHTML = `
+      <div>
+        <div>${clue.text}</div>
+        <div style="font-size:0.72rem; color:var(--text-muted);">Points toward: ${clue.pointsToward}</div>
+      </div>
+      <span style="font-weight:bold; font-size:0.75rem; ${statusClass}">${clue.status}</span>
+    `;
+    npcAttachedCluesList.appendChild(li);
+  });
+}
+
+if (npcInspectorSelect) {
+  npcInspectorSelect.addEventListener('change', updateNPCProfileInspector);
+}
+
+// Initial Render Calls
+renderClues();
+updateNPCProfileInspector();
