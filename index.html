@@ -126,47 +126,70 @@
       </ul>
     </section>
 
-    <!-- CARD 7: TRANSLATOR & NPC VOICE GUIDE -->
-    <section class="card" id="voice-guide">
-      <h2>Language & NPC Roleplay Guide</h2>
-      <p class="card-desc">Phonetics, tone styles, and NPC motivations.</p>
+  <!-- CARD 7: SECRETS & CLUES TRACKER -->
+    <section class="card" id="clues-tracker">
+      <h2>Secrets & Clues Tracker</h2>
+      <p class="card-desc">Track information drops and attach clues to specific NPCs.</p>
 
       <div class="input-group">
-        <label for="language-select">Active Language / Accent:</label>
-        <select id="language-select">
-          <option value="celestial">Celestial (Elegant, Divine)</option>
-          <option value="draconic">Draconic (Ancient, Resonant)</option>
-          <option value="orcish">Orcish (Brash, Direct)</option>
-          <option value="undercommon">Undercommon (Eerie, Soft)</option>
+        <label for="new-clue">Secret / Clue Text:</label>
+        <input type="text" id="new-clue" placeholder="e.g., Holds a cult insignia matching the Redbrands...">
+      </div>
+
+      <div class="input-group">
+        <label for="clue-npc-select">Attach to NPC / Entity:</label>
+        <select id="clue-npc-select">
+          <option value="Alberto Knox">Alberto Knox (Horizon Walker)</option>
+          <option value="Sophia">Sophia (Archivist of Deneir)</option>
+          <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne (The Counselor)</option>
+          <option value="Kaelen">Kaelen (Steward of Thalara)</option>
+          <option value="Glasstaff">Glasstaff (Iarno Albrek)</option>
+          <option value="Sildar Hallwinter">Sildar Hallwinter</option>
+          <option value="Gundren Rockseeker">Gundren Rockseeker</option>
+          <option value="General World Clue">General World Clue</option>
         </select>
       </div>
 
-      <div class="stats-box">
-        <p><strong>Performance Tone:</strong> Calm, resonant, formal; speak with warmth and perfect composure.</p>
-        <p><strong>Motivations:</strong> Justice, mercy, sacred duty, protecting innocents.</p>
-        <p><strong>Bribe Levers:</strong> Rarely bribable; value righteous causes and sacred oaths.</p>
-      </div>
-    </section>
-
-    <!-- CARD 8: SECRETS & CLUES TRACKER -->
-    <section class="card" id="clues-tracker">
-      <h2>Secrets & Clues Tracker</h2>
-      <p class="card-desc">Track information drops and player discoveries.</p>
-
       <div class="input-group">
-        <label for="new-clue">Add New Secret / Clue:</label>
-        <input type="text" id="new-clue" placeholder="e.g., The mayor holds a cult insignia...">
+        <label for="clue-points-toward">What It Points Toward:</label>
+        <input type="text" id="clue-points-toward" placeholder="e.g., True Identity, Traitor, Secret Location">
       </div>
       
       <div class="button-group">
-        <button type="button" class="btn btn-primary" id="btn-add-clue">Add Clue</button>
+        <button type="button" class="btn btn-primary" id="btn-add-clue">Attach Clue to NPC</button>
       </div>
 
       <ul class="clue-list" id="clues-list">
-        <li>
-          <span>The cultist symbol matches the local guard emblem.</span>
-          <button class="status-tag unrevealed" onclick="toggleClueStatus(this)">Hidden</button>
-        </li>
+        <!-- Attached clues rendered dynamically -->
+      </ul>
+    </section>
+
+    <!-- CARD 8: NPC DIRECTORY & PROFILE INSPECTOR -->
+    <section class="card" id="npc-directory">
+      <h2>NPC Profile & Clue Inspector</h2>
+      <p class="card-desc">Select an NPC to view their goals, emotional state, and attached clues.</p>
+
+      <div class="input-group">
+        <label for="npc-inspector-select">Select NPC Profile:</label>
+        <select id="npc-inspector-select">
+          <option value="Alberto Knox">Alberto Knox</option>
+          <option value="Sophia">Sophia</option>
+          <option value="Mr. X / Aurivex Veyne">Mr. X / Aurivex Veyne</option>
+          <option value="Kaelen">Kaelen</option>
+          <option value="Glasstaff">Glasstaff (Iarno Albrek)</option>
+          <option value="Sildar Hallwinter">Sildar Hallwinter</option>
+        </select>
+      </div>
+
+      <div class="stats-box" id="npc-profile-display">
+        <p><strong>Role & Alignment:</strong> Horizon Walker | Lawful Neutral</p>
+        <p><strong>Goal:</strong> Track planar breaches and resolve timeline anomalies.</p>
+        <p><strong>Emotional State:</strong> Hesitant, burdened by epistemic strain.</p>
+      </div>
+
+      <h3 style="margin-top: 12px; font-size: 0.95rem; color: #f1c40f;">Attached Clues & Secrets:</h3>
+      <ul class="clue-list" id="npc-attached-clues">
+        <!-- Attached clues for selected NPC render here -->
       </ul>
     </section>
 
