@@ -1,4 +1,97 @@
 // =================================================================
+// MASTER CAMPAIGN & SESSION LOG ENGINE
+// =================================================================
+
+let masterCampaignLogs = [
+  {
+    timestamp: "2026-10-04",
+    text: "Campaign Command Center initialized.",
+    isAlert: false
+  }
+];
+
+const masterSessionLogDisplay = getEl('master-session-log');
+const customLogInput = getEl('custom-log-input');
+const btnAddCustomLog = getEl('btn-add-custom-log');
+const btnCopyLog = getEl('btn-copy-log');
+const btnClearLog = getEl('btn-clear-log');
+
+// Centralized Automatic Logger Function
+function addCampaignLog(text, isAlert = false) {
+  const currentDate = getEl('campaign-current') ? getEl('campaign-current').value : '2026-10-04';
+  
+  const newEntry = {
+    timestamp: currentDate,
+    text: text,
+    isAlert: isAlert
+  };
+
+  masterCampaignLogs.push(newEntry);
+  renderMasterCampaignLog();
+}
+
+function renderMasterCampaignLog() {
+  if (!masterSessionLogDisplay) return;
+
+  masterSessionLogDisplay.innerHTML = '';
+
+  if (masterCampaignLogs.length === 0) {
+    masterSessionLogDisplay.innerHTML = '<div style="color:#888;">No campaign log entries yet.</div>';
+    return;
+  }
+
+  masterCampaignLogs.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.style.borderBottom = '1px dotted #222';
+    div.style.paddingBottom = '4px';
+    div.style.lineHeight = '1.3';
+
+    if (entry.isAlert) {
+      div.style.color = '#e57373';
+      div.style.fontWeight = 'bold';
+    }
+
+    div.innerHTML = `<span style="color:#f1c40f; font-weight:bold;">[${entry.timestamp}]</span> ${entry.text}`;
+    masterSessionLogDisplay.appendChild(div);
+  });
+
+  // Auto-scroll to the newest entry at the bottom
+  masterSessionLogDisplay.scrollTop = masterSessionLogDisplay.scrollHeight;
+}
+
+// Manual Note Entry Handler
+if (btnAddCustomLog) {
+  btnAddCustomLog.addEventListener('click', () => {
+    const text = customLogInput ? customLogInput.value.trim() : '';
+    if (!text) return;
+
+    addCampaignLog(`✍️ ${text}`);
+    if (customLogInput) customLogInput.value = '';
+  });
+}
+
+// Copy Log to Clipboard
+if (btnCopyLog) {
+  btnCopyLog.addEventListener('click', () => {
+    if (!masterSessionLogDisplay) return;
+    const logText = masterCampaignLogs.map(e => `[${e.timestamp}] ${e.text}`).join('\n');
+    navigator.clipboard.writeText(logText);
+    alert("Campaign log copied to clipboard!");
+  });
+}
+
+// Clear Log History
+if (btnClearLog) {
+  btnClearLog.addEventListener('click', () => {
+    if (confirm("Are you sure you want to clear the session log history?")) {
+      masterCampaignLogs = [];
+      renderMasterCampaignLog();
+    }
+  });
+}
+
+// =================================================================
 // CAMPAIGN COMMAND CENTER — MASTER APPLICATION ENGINE (app.js)
 // =================================================================
 
