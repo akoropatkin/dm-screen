@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags specify character encoding and responsive viewport sizing for screens -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DM Screen - Campaign Command Center</title>
+  
+  <!-- Link to external CSS stylesheet for visuals -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+  <!-- Top Header Navigation -->
+  <header class="app-header">
+    <h1>Campaign Command Center</h1>
+    <span class="subtitle">Ultimate DM Screen v4.5</span>
+  </header>
+
+  <!-- Main Grid Dashboard Layout -->
+  <main class="dashboard-grid">
+
+    <!-- CARD 1: TIME & CALENDAR ENGINE -->
+    <section class="card" id="time-engine">
+      <h2>Time & Calendar Engine</h2>
+      <p class="card-desc">Tracks real-world time elapsed vs. in-game progression.</p>
+      
+      <div class="input-group">
+        <label for="campaign-start">Campaign Start Date:</label>
+        <input type="date" id="campaign-start" value="2026-07-01">
+      </div>
+
+      <div class="input-group">
+        <label for="campaign-current">Current Campaign Date:</label>
+        <input type="date" id="campaign-current" value="2026-10-04">
+      </div>
+
+      <div class="stats-box">
+        <p><strong>Days Elapsed:</strong> <span id="days-elapsed-display">0</span> days</p>
+        <p><strong>15-Min Real Time Rule:</strong> 15 mins real = 1 hr in-game</p>
+      </div>
+    </section>
+
+    <!-- CARD 2: TENSION POOL & HAZARD COUNTER -->
+    <section class="card" id="tension-pool">
+      <h2>Tension & Hazard Pool</h2>
+      <p class="card-desc">Tracks accumulated risk and active complication severity.</p>
+
+      <div class="stats-box">
+        <p><strong>Dice Pool Size:</strong> <span id="dice-pool-count">0</span> d6</p>
+        <p><strong>Threat Level:</strong> <span id="threat-level-display">Calm</span></p>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-primary">Add Action Die</button>
+        <button type="button" class="btn btn-danger">Roll Tension Pool</button>
+      </div>
+    </section>
+
+    <!-- CARD 3: ENVIRONMENT & WEATHER -->
+    <section class="card" id="weather-engine">
+      <h2>Environment & Weather</h2>
+      <p class="card-desc">Active biome conditions and environmental mechanics.</p>
+      
+      <div class="stats-box">
+        <p><strong>Current Weather:</strong> Clear Skies</p>
+        <p><strong>Temperature:</strong> 67°F</p>
+        <p><strong>Wind Condition:</strong> High Winds (Ranged attack disadvantage)</p>
+      </div>
+    </section>
+
+    <!-- CARD 4: FACTION CLOCKS -->
+    <section class="card" id="faction-clocks">
+      <h2>Faction Clocks</h2>
+      <p class="card-desc">Progressive track for world events and looming threats.</p>
+
+      <div class="clock-item">
+        <p><strong>Cultist Ritual Progress:</strong> 2 / 6 Segments</p>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
